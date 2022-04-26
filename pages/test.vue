@@ -3,7 +3,7 @@
   
 <div class="container">
   <h3>Test Page</h3>
-  <p> {{wallets}} </p>
+  <p> wallet ID: {{ $store.getters.walletid }} </p>
 </div>
 
 </template>
@@ -12,12 +12,6 @@
 export default {
  layout:'menu',
 
-  computed: {
-    wallets(){
-      return this.$store.wallets.state.wallets
-    }
-    
-  }
 }
 </script>
 

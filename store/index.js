@@ -1,9 +1,14 @@
-// store/index.js
 
-export const state = () => {}
+export const state = () => ({
+  walletid: '',
+})
 
-export const mutations = {}
+export const mutations = {
+  change(state, walletid) {
+    state.walletid = walletid
+  }
+}
 
-export const actions = {}
-
-export const getters = {}
+export const getters = {
+  walletid(state) {return state.walletid},
+}

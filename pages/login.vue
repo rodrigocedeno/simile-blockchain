@@ -8,18 +8,13 @@
       <div class="mb-3 row">
         <label for="walletId" class="col-sm-2 col-form-label">Wallet</label>
         <div class="col-sm-10">
-          <input
-            @input="changed"
-            name="inputWallet"
-            type="text"
-            class="form-control"
-            id="inputWallet"
-          />
+          <input @input="changed" name="inputWallet" />
         </div>
       </div>
       <a href="test" class="btn btn-primary">Login</a>
     </div>
     <div class="card-footer text-muted"></div>
+    <p>wallet ID: {{ $store.getters.walletid }} $$</p>
   </div>
 </template>
 
@@ -29,6 +24,7 @@ export default {
   methods: {
     changed(event) {
       this.$store.commit('change', event.target.value)
+      alert(event.target.value)
     },
   },
 }
