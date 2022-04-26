@@ -11,15 +11,35 @@
           <input type="text" class="form-control" id="inputWallet" />
         </div>
       </div>
-      <a href="#" class="btn btn-primary">Login</a>
+      <a href="test" class="btn btn-primary">Login</a>
     </div>
     <div class="card-footer text-muted"></div>
   </div>
 </template>
 
 <script>
+
 export default {
   layout: 'menu',
+
+  data() {
+    return {
+      walletid: '',
+    }
+  },
+
+  methods: {
+    async login() {
+      try {
+        await this.$store.dispatch('local', {
+          walletid: this.walletid,
+        })
+      } catch (e) {
+        this.formError = e.message
+      }
+      this.$session.start()
+    },
+  },
 }
 </script>
 
