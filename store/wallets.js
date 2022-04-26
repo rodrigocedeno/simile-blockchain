@@ -1,17 +1,24 @@
 // store/index.js
 
-export const state = () => ({
-    wallets: [],
-})
+import Vue from 'vue'
+import Vuex from 'vuex'
 
-export const mutations = {
-    addWallet(state, wallet){
-        state.wallets.push(wallet)
+Vue.use(Vuex)
+
+export const store = new Vuex.Store({
+  state: {
+    walletid: '',
+  },
+  // mutations are the ones capable of changing the state
+  mutations: {
+    change(state, walletid) {
+      state.walletid = walletid
     },
-    removeWallet(state, walletID){
-    state.wallets = state.wallets.filter((wallet) => wallet.id !== walletID)}
-}
-
-export const actions = {}
-
-export const getters = {}
+  },
+  // we need to add a way to look at the state. We do so using getters.
+  // Notice how getters is an object. walletid is a property of this object, which accepts the state as the parameter,
+  // and returns the wallletid property of the state.
+  getters: {
+    walletid: (state) => state.walletid,
+  },
+})

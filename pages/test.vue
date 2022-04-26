@@ -3,7 +3,7 @@
   
 <div class="container">
   <h3>Test Page</h3>
-  <p> {{wallet}} </p>
+  <p> {{wallets}} </p>
 </div>
 
 </template>
