@@ -8,24 +8,38 @@
       <div class="mb-3 row">
         <label for="walletId" class="col-sm-2 col-form-label">Wallet</label>
         <div class="col-sm-10">
-          <input @input="changed" name="inputWallet" />
+        <input class="form-control" v-model="walletnum" />
         </div>
       </div>
-      <a href="test" class="btn btn-primary">Login</a>
+      <a href="test" class="btn btn-primary" @click="persist">Login</a>
+      <a href="" class="btn btn-primary" @click="deleteWallet">Delete</a>
     </div>
     <div class="card-footer text-muted"></div>
-    <p>wallet ID: {{ $store.getters.walletid }} $$</p>
   </div>
 </template>
 
 <script>
 export default {
   layout: 'menu',
+
+  data() {
+    return {
+      walletnum: '',
+    }
+  },
+
+  mounted() {
+    if (localStorage.walletnum) {
+      this.walletnum = localStorage.walletnum
+    }
+  },
   methods: {
-    changed(event) {
-      this.$store.commit('change', event.target.value)
-      alert(event.target.value)
+    persist() {
+      localStorage.walletnum = this.walletnum
     },
+    deleteWallet(){
+      localStorage.walletnum = ''
+    }
   },
 }
 </script>
