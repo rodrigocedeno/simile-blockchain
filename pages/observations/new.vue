@@ -18,17 +18,9 @@
 
     <div class="contact-form">
       <form>
-        <div class="form-group row">
-          <label for="Wallet" class="col-sm-2 col-form-label">WalletID</label>
-          <div class="col-sm-10">
-            <input
-              id="inputWallet"
-              type="text"
-              class="form-control"
-              placeholder="WalletID"
-              required
-            >
-          </div>
+        <div class="form-group">
+          <label for="Wallet" class="col-form-label"> Your wallet number is: {{walletnum}}</label>
+          
         </div>
         <br />
         <div class="form-group row">
@@ -38,7 +30,7 @@
               id="inputLatitude"
               type="number"
               class="form-control"
-              placeholder="Latitude"
+              placeholder="Latitude of new observation"
               required
             />
           </div>
@@ -53,7 +45,7 @@
               id="inputLongitude"
               type="number"
               class="form-control"
-              placeholder="Longitude"
+              placeholder="Longitude of new observation"
               required
             />
           </div>
@@ -73,6 +65,14 @@
 <script>
 export default {
   layout: 'menu',
+    data() {
+    return {
+      walletnum: '',
+    }
+  },
+  mounted() {
+      this.walletnum = localStorage.walletnum
+    },
 }
 
 
