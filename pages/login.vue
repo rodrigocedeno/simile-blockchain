@@ -8,11 +8,10 @@
       <div class="mb-3 row">
         <label for="walletId" class="col-sm-2 col-form-label">Wallet</label>
         <div class="col-sm-10">
-        <input class="form-control" v-model="walletnum" />
+        <input v-model="walletnum" class="form-control"/>
         </div>
       </div>
-      <a href="test" class="btn btn-primary" @click="persist">Login</a>
-      <a href="" class="btn btn-primary" @click="deleteWallet">Delete</a>
+      <a href="/" class="btn btn-primary" @click="persist">Login</a>
     </div>
     <div class="card-footer text-muted"></div>
   </div>
@@ -37,9 +36,6 @@ export default {
     persist() {
       localStorage.walletnum = this.walletnum
     },
-    deleteWallet(){
-      localStorage.walletnum = ''
-    }
   },
 }
 </script>
