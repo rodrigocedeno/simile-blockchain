@@ -31,7 +31,7 @@
               <div v-if="walletnum" class="d-flex justify-content-end">
                 <form class="d-flex">
                   <button
-                    class="btn btn-outline-success me-2"
+                    class="btn btn-outline-light white me-2"
                     type="submit"
                     @click="deleteWallet"
                   >
