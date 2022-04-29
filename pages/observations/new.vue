@@ -18,6 +18,7 @@
 
     <div class="contact-form">
       <form>
+<<<<<<< HEAD
         <div class="form-group row">
           <label for="Wallet" 
             >Your current wallet ID is {{ walletnum }}</label
@@ -35,6 +36,11 @@
               required
             />
           </div>
+=======
+        <div class="form-group">
+          <label for="Wallet" class="col-form-label"> Your wallet number is: {{walletnum}}</label>
+          
+>>>>>>> 7f1a293713e42cc2c201c452c7e18af7f8730ce2
         </div>
         <br />
         <div class="form-group row">
@@ -44,7 +50,7 @@
               id="inputLatitude"
               type="number"
               class="form-control"
-              placeholder="Latitude"
+              placeholder="Latitude of new observation"
               required
             />
           </div>
@@ -59,7 +65,7 @@
               id="inputLongitude"
               type="number"
               class="form-control"
-              placeholder="Longitude"
+              placeholder="Longitude of new observation"
               required
             />
           </div>
@@ -84,6 +90,19 @@
 <script>
 export default {
   layout: 'menu',
+<<<<<<< HEAD
+=======
+    data() {
+    return {
+      walletnum: '',
+    }
+  },
+  mounted() {
+      this.walletnum = localStorage.walletnum
+    },
+}
+
+>>>>>>> 7f1a293713e42cc2c201c452c7e18af7f8730ce2
 
   data() {
     return {

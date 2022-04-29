@@ -1,4 +1,5 @@
 <template>
+<!-- Super cool tutorial where I got the idea of client-side storage https://v2.vuejs.org/v2/cookbook/client-side-storage.html?redirect=true -->
   <div class="card text-center">
     <div class="card-header"></div>
     <div class="card-body">
