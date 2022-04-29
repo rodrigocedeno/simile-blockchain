@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container-menu">
     <div class="main-page">
       <nav
         class="navbar navbar-expand-lg navbar-light"
@@ -18,7 +18,10 @@
           >
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div id="navbarNav" class="collapse navbar-collapse justify-content-end">
+          <div
+            id="navbarNav"
+            class="collapse navbar-collapse justify-content-end"
+          >
             <ul class="navbar-nav">
               <li class="nav-item">
                 <a class="nav-link" href="/observations/new">New Observation</a>
@@ -26,6 +29,11 @@
               <li class="nav-item">
                 <a class="nav-link" href="/vote/listOfPoints"
                   >Validate Observations</a
+                >
+              </li>
+              <li v-if="walletnum">
+                <a class="nav-link" href="/observations/personalObs"
+                  >Personal Observations</a
                 >
               </li>
               <div v-if="walletnum" class="d-flex justify-content-end">
@@ -43,6 +51,7 @@
           </div>
         </div>
       </nav>
+      <div class="d-flex justify-content-end p-2">Your current Wallet ID is: {{ walletnum }}</div>
       <div class="content">
         <Nuxt />
       </div>
@@ -65,15 +74,13 @@ export default {
   mounted() {
     if (localStorage.walletnum) {
       this.walletnum = localStorage.walletnum
-    }
-    else{
+    } else {
       this.$router.push('/login')
     }
   },
   methods: {
     deleteWallet() {
       localStorage.walletnum = ''
-      
     },
   },
 }
@@ -99,5 +106,9 @@ export default {
   align-items: center;
   padding: 30px;
   justify-content: right;
+  
+}
+.container-menu {
+  padding: 3px;
 }
 </style>

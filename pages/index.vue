@@ -1,5 +1,5 @@
 <template>
-<div class="container">
+<div class="container2">
     <h1>Welcome to SIMILE Geoblockchain!</h1>
     <br>
     <body class="subcontainer">
@@ -19,7 +19,7 @@ export default {
 </script>
 
 <style>
-.container {
+.container2 {
   margin: 0 auto;
   text-align: center;
   padding: 30px;

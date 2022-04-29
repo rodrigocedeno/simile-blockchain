@@ -19,15 +19,21 @@
     <div class="contact-form">
       <form>
         <div class="form-group row">
-          <label for="Wallet" class="col-sm-2 col-form-label">WalletID</label>
+          <label for="Wallet" 
+            >Your current wallet ID is {{ walletnum }}</label
+          >
+        </div>
+        <br />
+        <div class="form-group row">
+          <label for="personalToken" class="col-sm-2 col-form-label">Personal Token</label>
           <div class="col-sm-10">
             <input
-              id="inputWallet"
-              type="text"
+              id="inputToken"
+              type="number"
               class="form-control"
-              placeholder="WalletID"
+              placeholder="Personal token"
               required
-            >
+            />
           </div>
         </div>
         <br />
@@ -61,7 +67,12 @@
         <br />
         <div class="form-group">
           <label for="JSON">JSON file input</label>
-          <input id="FormControlJSON" type="file" class="form-control-file" required/>
+          <input
+            id="FormControlJSON"
+            type="file"
+            class="form-control-file"
+            required
+          />
         </div>
         <br />
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -73,9 +84,20 @@
 <script>
 export default {
   layout: 'menu',
+
+  data() {
+    return {
+      walletnum: '',
+    }
+  },
+  mounted() {
+    if (localStorage.walletnum) {
+      this.walletnum = localStorage.walletnum
+    } else {
+      this.$router.push('/login')
+    }
+  },
 }
-
-
 </script>
 
 <style>
