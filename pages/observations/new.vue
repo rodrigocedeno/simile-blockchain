@@ -28,7 +28,7 @@
           <label for="privateKey" class="col-sm-2 col-form-label">Private Key</label>
           <div class="col-sm-10">
             <input
-              id="inputToken"
+              id="privateKey"
               type="number"
               class="form-control"
               placeholder="Private Key"
