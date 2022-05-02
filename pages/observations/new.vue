@@ -25,13 +25,13 @@
         </div>
         <br />
         <div class="form-group row">
-          <label for="personalToken" class="col-sm-2 col-form-label">Personal Token</label>
+          <label for="privateKey" class="col-sm-2 col-form-label">Private Key</label>
           <div class="col-sm-10">
             <input
               id="inputToken"
               type="number"
               class="form-control"
-              placeholder="Personal token"
+              placeholder="Private Key"
               required
             />
           </div>
