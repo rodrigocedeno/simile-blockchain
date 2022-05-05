@@ -586,9 +586,26 @@ function getS2IndexHex(lat, lng){
 
 //convert S2 index (hexadecimal wihtout 0x prefix) to coordinates
 export function getCoordFromIndex(index){
-	var indexDec = BigInt(index).toString(10);
+	var indexDec = hexToDec(index);
 	var latlng = S2.idToLatLng(indexDec);
 	return latlng;
+}
+
+function hexToDec(s) {
+    var i, j, digits = [0], carry;
+    for (i = 0; i < s.length; i += 1) {
+        carry = parseInt(s.charAt(i), 16);
+        for (j = 0; j < digits.length; j += 1) {
+            digits[j] = digits[j] * 16 + carry;
+            carry = digits[j] / 10 | 0;
+            digits[j] %= 10;
+        }
+        while (carry > 0) {
+            digits.push(carry % 10);
+            carry = carry / 10 | 0;
+        }
+    }
+    return digits.reverse().join('');
 }
 
 //add 0x to the string
