@@ -715,7 +715,7 @@ async function deleteObservation(fileHash, s2Index, wallettAddress, privateKey){
 }
 
 //get all the hashes stored in the contracts, grouped by S2 index
-async function getObservations(){
+export async function getObservations(){
 	var cellAddresses = await getAllAddresses();
 	var observations = await getAllHashes(cellAddresses);
 	return observations;	
@@ -740,7 +740,7 @@ async function getAllAddresses(){
 }
 
 //get all the hashes from the cells in the address list
-async function getAllHashes(cellAddresses){
+export async function getAllHashes(cellAddresses){
 	var fileHashPromises = [];
 	cellAddresses.forEach(address => {
 		fileHashPromises.push(getHashes(address));
