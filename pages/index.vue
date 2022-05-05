@@ -1,21 +1,26 @@
 <template>
-<div class="container2">
+  <div class="container2">
     <h1>Welcome to SIMILE Geoblockchain!</h1>
-    <br>
+    <br />
     <body class="subcontainer">
       <h2>What do you want to do?</h2>
-      <br>
-      <a class="btn btn-outline-secondary" href="/vote/listOfPoints" role="button">Review Observations</a>
-      <a class="btn btn-outline-success" href="/observations/new" role="button">New Observation</a>
+      <br />
+      <a
+        class="btn btn-outline-secondary"
+        href="/vote/listOfPoints"
+        role="button"
+        >Review Observations</a
+      >
+      <a class="btn btn-outline-success" href="/observations/new" role="button"
+        >New Observation</a
+      >
     </body>
-</div>
+  </div>
 </template>
-
 <script>
 export default {
   layout: 'menu',
 }
-
 </script>
 
 <style>
@@ -24,7 +29,7 @@ export default {
   text-align: center;
   padding: 30px;
 }
-.subcontainer{
+.subcontainer {
   margin: 0 auto;
   text-align: center;
   padding: 30px;
