@@ -21,7 +21,7 @@
             </div>
           </div>
         </div>
-        <div class="column">{{ deleteResult }}</div>
+        <div class="column">{{ updateResult }}</div>
 
         <div class="form-group row">
           <label for="privateKey" class="col-sm-2 col-form-label"
@@ -149,7 +149,7 @@ export default {
       this.updateResult = await blockchain.updateObservation(
         this.currentObsHash,
         this.newFileString,
-        this.currentObsIndex,
+        blockchain.removeHexPrefix(this.currentObsIndex),
         localStorage.walletnum,
         this.privateKey
       );
