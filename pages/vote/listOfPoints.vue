@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { getObservations } from '../../static/blockchain.js'
+// import { getObservations } from '../../static/blockchain.js'
 
 export default {
   layout: 'menu',
@@ -21,7 +21,7 @@ export default {
   },
 
   mounted() {
-    this.example = JSON.stringify(getObservations.cellAddresses);
+    // this.example = JSON.stringify(getObservations.cellAddresses);
 
     if (localStorage.walletnum) {
       this.walletnum = localStorage.walletnum

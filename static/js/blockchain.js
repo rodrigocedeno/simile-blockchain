@@ -5,7 +5,6 @@ const hashing = require("ipfs-only-hash");
 const bs58 = require('bs58');
 const Web3 = require('web3');
 const S2 = require('s2-geometry').S2;
-//const fs = require("fs");
 const toBuffer = require("it-to-buffer");
 //connect to Velas testnet
 const web3 = new Web3(new Web3.providers.HttpProvider('https://evmexplorer.testnet.velas.com/rpc'));
