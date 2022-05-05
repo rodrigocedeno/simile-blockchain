@@ -740,8 +740,8 @@ export async function getObservations(){
 
 //get all the hashes saved by the current user, grouped by S2 index
 async function getUserObservations(wallettAddress){
-	var cellAddress = await getAllAddresses();
-	var userObservations = await getAllUserHashes(cellAddress, wallettAddress);
+	var cellAddresses = await getAllAddresses();
+	var userObservations = await getAllUserHashes(cellAddresses, wallettAddress);
 	return userObservations;
 }
 
@@ -819,7 +819,18 @@ async function isHashOwner(cellAddress, fileHash, wallettAddress){
 }
 
 //get all the votes of the hash
-async function getAllFileVotes(cellAddress, fileHash){
+export async function getAllFileVotes(s2Index, fileHash){
+	var cellAddress;
+	if (await indexExistTx(s2Index)){
+		cellAddress = await getCellAddressTx(s2Index);
+		
+	}else{
+		return "Index does not exist"
+	}
+
+	if (!(await fileExistTx(cellAddress, fileHash))){
+		return "File does not exist";
+	}
 	var voters = await getHashVotersTx(cellAddress,fileHash);
 	var votePromises = [];
 	voters.forEach(voter => {
