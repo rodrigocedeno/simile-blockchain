@@ -21,8 +21,28 @@
             </div>
           </div>
         </div>
-        <div class="column"></div>
-        {{ countvotes }}
+        <div class="column">{{ voteResult }}</div>
+
+        <div class="form-group row">
+          <label for="privateKey" class="col-sm-2 col-form-label"
+            >Private Key</label
+          >
+          <div class="col-sm-10">
+            <input
+              v-model="privateKey"
+              type="string"
+              class="form-control"
+              placeholder="Private Key"
+              required
+            />
+          </div>
+        </div>
+        <a class="btn btn-outline-secondary" role="button" @click="sendVote(1)"
+          >Reject</a
+        >
+        <a class="btn btn-outline-success" role="button" @click="sendVote(2)"
+          >Accept</a
+        >
       </div>
     </div>
     <div v-else>
@@ -41,11 +61,15 @@ export default {
     return {
       walletnum: '',
       observationList: '',
-      coords: 1,
+      coords: '',
+      currentObsHash: '',
+      currentObsIndex: '',
+      privateKey: '',
       contents: '',
       votes: '',
       file: '',
-      countvotes: '',
+      countVotes: '',
+      voteResult: '',
     }
   },
 
@@ -69,25 +93,36 @@ export default {
       return this.coords
     },
     calculateVote(votes) {
-      let positive = 0;
-    
-      for (let i=0; i<votes.length; i++) {
-       
-        if (votes[i] === "2") {
-          positive++;
+      let positive = 0
+
+      for (let i = 0; i < votes.length; i++) {
+        if (votes[i] === '2') {
+          positive++
         }
       }
       return (positive / votes.length) * 100
-      
     },
 
     async viewObservation(s2Index, fileHash) {
+      this.currentObsHash = fileHash
+      this.currentObsIndex = s2Index
       this.votes = await blockchain.getAllFileVotes(s2Index, fileHash)
       const multihash = blockchain.getIpfsMultihash(
         blockchain.removeHexPrefix(fileHash)
       )
       this.file = await blockchain.readFromIpfs(multihash)
-      this.countvotes = this.calculateVote(this.votes)
+      this.countVotes = this.calculateVote(this.votes)
+    },
+
+    async sendVote(vote) {
+      this.voteResult = await blockchain.voteObservation(
+      this.currentObsHash,
+      blockchain.removeHexPrefix(this.currentObsIndex),
+      vote,
+      localStorage.walletnum,
+      this.privateKey
+      )
+      this.privateKey = "";
     },
   },
 }

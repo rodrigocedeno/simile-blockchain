@@ -647,7 +647,10 @@ export async function addObservation(lat, lng, observationFile, wallettAddress, 
 }
 
 //store the vote in the cell contract
-async function voteObservation(fileHash, s2Index, vote, wallettAddress, privateKey){
+export async function voteObservation(fileHash, s2Index, vote, wallettAddress, privateKey){
+	if (!(vote == 1 || vote == 2)){
+		return "Invalid vote";
+	}
 	s2Index = addHexPrefix(s2Index);
 	if (await indexExistTx(s2Index)){
 		var cellAddress = await getCellAddressTx(s2Index);
@@ -669,7 +672,7 @@ async function voteObservation(fileHash, s2Index, vote, wallettAddress, privateK
 }
 
 //update the hash in the cell contract and upload new file to IPFS
-async function updateObservation(oldFileHash, newObservationFile, s2Index, wallettAddress, privateKey){
+export async function updateObservation(oldFileHash, newObservationFile, s2Index, wallettAddress, privateKey){
 	s2Index = addHexPrefix(s2Index);
 	if (await indexExistTx(s2Index)){
 		var cellAddress = await getCellAddressTx(s2Index);
@@ -707,7 +710,7 @@ async function updateObservation(oldFileHash, newObservationFile, s2Index, walle
 }
 
 //remove the hash from the cell contract
-async function deleteObservation(fileHash, s2Index, wallettAddress, privateKey){
+export async function deleteObservation(fileHash, s2Index, wallettAddress, privateKey){
 	s2Index = addHexPrefix(s2Index);
 	if (await indexExistTx(s2Index)){
 		var cellAddress = await getCellAddressTx(s2Index);
@@ -739,7 +742,7 @@ export async function getObservations(){
 }
 
 //get all the hashes saved by the current user, grouped by S2 index
-async function getUserObservations(wallettAddress){
+export async function getUserObservations(wallettAddress){
 	var cellAddresses = await getAllAddresses();
 	var userObservations = await getAllUserHashes(cellAddresses, wallettAddress);
 	return userObservations;
