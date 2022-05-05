@@ -17,7 +17,7 @@
     </main>
 
     <div class="contact-form">
-      <form>
+      <form @submit.prevent="onsubmit">
         <div class="form-group row">
           <label for="Wallet" 
             >Your current wallet ID is {{ walletnum }}</label
@@ -28,8 +28,8 @@
           <label for="privateKey" class="col-sm-2 col-form-label">Private Key</label>
           <div class="col-sm-10">
             <input
-              id="privateKey"
-              type="number"
+              v-model="privateKey"
+              type="string"
               class="form-control"
               placeholder="Private Key"
               required
@@ -41,11 +41,12 @@
           <label for="Latitude" class="col-sm-2 col-form-label">Latitude</label>
           <div class="col-sm-10">
             <input
-              id="inputLatitude"
+              v-model.number="lat"
               type="number"
               class="form-control"
               placeholder="Latitude of new observation"
               required
+              step="any"
             />
           </div>
         </div>
@@ -56,11 +57,12 @@
           >
           <div class="col-sm-10">
             <input
-              id="inputLongitude"
+              v-model.number="lng"
               type="number"
               class="form-control"
               placeholder="Longitude of new observation"
               required
+              step="any"
             />
           </div>
         </div>
@@ -68,26 +70,33 @@
         <div class="form-group">
           <label for="JSON">JSON file input</label>
           <input
-            id="FormControlJSON"
             type="file"
             class="form-control-file"
             required
+            @change="readFile"
           />
         </div>
         <br />
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
     </div>
+    <div id="result">{{result}}</div>
   </span>
 </template>
 
 <script>
+import * as blockchain from '../../static/js/blockchain.js';
 export default {
   layout: 'menu',
 
   data() {
     return {
       walletnum: '',
+      privateKey: '',
+      lat: '',
+      lng: '',
+      fileString: '',
+      result: '',
     }
   },
   mounted() {
@@ -96,6 +105,29 @@ export default {
     } else {
       this.$router.push('/login')
     }
+  },
+  methods: {
+    async readFile(event) {
+      const file = await event.target.files[0].text();
+      this.fileString = file;
+      // this.result = JSON.stringify(file, undefined, 2)
+      
+    },
+
+    onsubmit() {      
+      const result = blockchain.addObservation(this.lat, this.lng, this.fileString, localStorage.walletnum, this.privateKey);
+      
+      result.then(val => {
+      // got value here
+        this.result = val;
+      }).catch(e => {
+      // error
+      this.result = "error";
+      });  
+      
+    },
+
+    
   },
 }
 </script>
