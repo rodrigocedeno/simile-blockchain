@@ -14,6 +14,10 @@
       <a class="btn btn-outline-success" href="/observations/new" role="button"
         >New Observation</a
       >
+
+      <a class="btn btn-outline-dark" href="/observations/personalObs" role="button"
+        >See personal observations</a
+      >
     </body>
   </div>
 </template>

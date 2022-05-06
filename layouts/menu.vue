@@ -22,11 +22,11 @@
             id="navbarNav"
             class="collapse navbar-collapse justify-content-end"
           >
-            <ul class="navbar-nav">
+            <ul v-if="walletnum" class="navbar-nav">
               <li class="nav-item">
                 <a class="nav-link" href="/observations/new">New Observation</a>
               </li>
-              <li class="nav-item">
+              <li v-if="walletnum" class="nav-item">
                 <a class="nav-link" href="/vote/listOfPoints"
                   >Validate Observations</a
                 >

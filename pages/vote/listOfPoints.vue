@@ -1,52 +1,84 @@
 <template>
   <div class="container">
     <div v-if="observationList">
-      <div class="row2">
-        <div class="column2">
-          <h1>List of points to validate</h1>
-          <div
-            v-for="observation in observationList"
-            :key="observation.s2index"
-          >
+      <div class="row">
+        <div class="col">
+          <div>
+            <h1>List of points to validate</h1>
             <div
-              v-for="obsHashes in observation.fileHashes"
-              :key="obsHashes"
-              @click="viewObservation(observation.s2Index, obsHashes)"
+              v-for="observation in observationList"
+              :key="observation.s2index"
             >
-              <strong>Hash:</strong> {{ obsHashes }}
-              <strong> Latitude:</strong>
-              {{ convertIndex(observation.s2Index).lat
-              }}<strong> Longitude:</strong>
-              {{ convertIndex(observation.s2Index).lng }}
+              <ul class="list-group">
+                <li
+                  v-for="obsHashes in observation.fileHashes"
+                  :key="obsHashes"
+                  class="btn btn-outline-dark"
+                  @click="viewObservation(observation.s2Index, obsHashes)"
+                >
+                  <strong>Hash:</strong> {{ obsHashes }}
+                  <strong> Latitude:</strong>
+                  {{ convertIndex(observation.s2Index).lat
+                  }}<strong> Longitude:</strong>
+                  {{ convertIndex(observation.s2Index).lng }}
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-        <div class="column">{{ voteResult }}</div>
-
-        <div class="form-group row">
-          <label for="privateKey" class="col-sm-2 col-form-label"
-            >Private Key</label
-          >
-          <div class="col-sm-10">
-            <input
-              v-model="privateKey"
-              type="string"
-              class="form-control"
-              placeholder="Private Key"
-              required
-            />
+        <div v-if="currentObsHash" class="col">
+          <div class="card">
+            <h1 class="card-title">Details of Selected Point:</h1>
+            <p><strong> Hash: </strong> {{ currentObsHash }}</p>
+            <br />
+            <p><strong>Latitude: </strong> {{ coords.lat }}</p>
+            <br />
+            <p><strong>Longitude: </strong> {{ coords.lng }}</p>
+            <br />
+            <p><strong>JSON file data: </strong></p>
+            <span style="white-space: pre">{{ pretty(file) }}</span>
+            <br />
+            <div>
+              <strong>
+                Please enter your private key and click on accept or reject
+              </strong>
+            </div>
+            <br />
+            <div class="form-group row">
+              <label for="privateKey" class="col-sm-2 col-form-label"
+                >Private Key</label
+              >
+              <div class="col-sm-10">
+                <input
+                  v-model="privateKey"
+                  type="string"
+                  class="form-control"
+                  placeholder="Private Key"
+                  required
+                />
+              </div>
+            </div>
+            <br />
+            <div class="justify-content-start">
+              <a
+                class="btn btn-outline-danger"
+                role="button"
+                @click="sendVote(1)"
+                >Reject Point</a
+              >
+              <a
+                class="btn btn-outline-success"
+                role="button"
+                @click="sendVote(2)"
+                >Accept Point</a
+              >
+            </div>
           </div>
         </div>
-        <a class="btn btn-outline-secondary" role="button" @click="sendVote(1)"
-          >Reject</a
-        >
-        <a class="btn btn-outline-success" role="button" @click="sendVote(2)"
-          >Accept</a
-        >
       </div>
     </div>
     <div v-else>
-      <h1>Loading Observations...</h1>
+      <h1>Loading observations to review...</h1>
     </div>
   </div>
 </template>
@@ -67,9 +99,10 @@ export default {
       privateKey: '',
       contents: '',
       votes: '',
-      file: '',
+      file: '{}',
       countVotes: '',
       voteResult: '',
+      prettyJSON: '',
     }
   },
 
@@ -116,13 +149,43 @@ export default {
 
     async sendVote(vote) {
       this.voteResult = await blockchain.voteObservation(
-      this.currentObsHash,
-      blockchain.removeHexPrefix(this.currentObsIndex),
-      vote,
-      localStorage.walletnum,
-      this.privateKey
+        this.currentObsHash,
+        blockchain.removeHexPrefix(this.currentObsIndex),
+        vote,
+        localStorage.walletnum,
+        this.privateKey
       )
-      this.privateKey = "";
+      this.privateKey = ''
+    },
+
+    pretty(file) {
+      // const test = JSON.stringify((JSON.parse(file.slice(0,1))), null, 2);
+      this.prettyJSON = JSON.stringify(JSON.parse(file), undefined, 2)
+      return this.prettyJSON
+    },
+    syntaxHighlight(json) {
+      json = json
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+      return json.replace(
+        /("(\u[a-zA-Z0-9]{4}|\[^u]|[^"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
+        function (match) {
+          let cls = 'number2'
+          if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+              cls = 'key2'
+            } else {
+              cls = 'string2'
+            }
+          } else if (/true|false/.test(match)) {
+            cls = 'boolean2'
+          } else if (/null/.test(match)) {
+            cls = 'null'
+          }
+          return '<span class="' + cls + '">' + match + '</span>'
+        }
+      )
     },
   },
 }
@@ -131,13 +194,13 @@ export default {
 <style>
 .container {
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
   padding: 30px;
 }
 
 .content {
-  text-align: center;
-  align-content: center;
+  text-align: left;
+  align-content: left;
 }
 
 .column2 {
@@ -150,5 +213,26 @@ export default {
   content: '';
   display: table;
   clear: both;
+}
+
+pre {
+  outline: 1px solid #ccc;
+  padding: 5px;
+  margin: 5px;
+}
+.string2 {
+  color: green;
+}
+.number2 {
+  color: darkorange;
+}
+.boolean2 {
+  color: blue;
+}
+.null2 {
+  color: magenta;
+}
+.key2 {
+  color: red;
 }
 </style>
