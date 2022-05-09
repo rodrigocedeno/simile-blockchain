@@ -40,7 +40,7 @@
             <br />
             <div>
               <strong>
-                Please enter your private key and click on accept or reject
+                Please enter your private key to delete or update the observation
               </strong>
             </div>
             <br />
