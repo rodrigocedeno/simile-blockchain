@@ -36,9 +36,23 @@
                 <h1 class="card-title">Details of Selected Point:</h1>
                 <p><strong> Hash: </strong> {{ currentObsHash }}</p>
                 <br />
-                <p><strong>Latitude: </strong> {{ convertIndex(currentObsIndex).lat }}</p>
+                <p>
+                  <strong>Latitude: </strong>
+                  {{ convertIndex(currentObsIndex).lat }}
+                </p>
                 <br />
-                <p><strong>Longitude: </strong> {{ convertIndex(currentObsIndex).lng }}</p>
+                <p>
+                  <strong>Longitude: </strong>
+                  {{ convertIndex(currentObsIndex).lng }}
+                </p>
+                <br />
+                <p v-if="countVotes">
+                  <strong>Percentage of positive votes: </strong>
+                  {{ countVotes }}
+                </p>
+                <p v-else>
+                  <strong>Observation still not voted </strong>
+                </p>
                 <br />
                 <p><strong>JSON file data: </strong></p>
                 <span style="white-space: pre">{{ pretty(file) }} </span>
@@ -180,7 +194,6 @@ export default {
     async viewObservation(s2Index, fileHash) {
       this.currentObsHash = fileHash
       this.currentObsIndex = s2Index
-      
 
       this.votes = await blockchain.getAllFileVotes(s2Index, fileHash)
 

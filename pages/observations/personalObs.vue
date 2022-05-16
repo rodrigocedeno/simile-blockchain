@@ -35,12 +35,21 @@
             <br />
             <p><strong>Longitude: </strong> {{ coords.lng }}</p>
             <br />
+            <p v-if="countVotes">
+              <strong>Percentage of positive votes: </strong>
+              {{ countVotes }}
+            </p>
+            <p v-else>
+              <strong>Observation still not voted </strong>
+            </p>
+            <br />
             <p><strong>JSON file data: </strong></p>
             <span style="white-space: pre">{{ pretty(file) }}</span>
             <br />
             <div>
               <strong>
-                Please enter your private key to delete or update the observation
+                Please enter your private key to delete or update the
+                observation
               </strong>
             </div>
             <br />
@@ -78,7 +87,8 @@
               <br />
               <div>
                 <strong>
-                  Choose whether to delete your observation or update with the newly entered JSON file
+                  Choose whether to delete your observation or update with the
+                  newly entered JSON file
                 </strong>
               </div>
               <br />
@@ -102,10 +112,18 @@
     <div v-else>
       <h1>Loading your personal observations...</h1>
     </div>
+    <div class="d-flex justify-content-center p-2">
+      <div id="map" class="map"></div>
+    </div>
   </div>
 </template>
 
 <script>
+import 'ol/ol.css'
+import { fromLonLat } from 'ol/proj'
+import { View, Map } from 'ol'
+import { Tile as TileLayer } from 'ol/layer'
+import OSM from 'ol/source/OSM'
 import * as blockchain from '../../static/js/blockchain.js'
 
 export default {
@@ -127,6 +145,8 @@ export default {
       deleteResult: '',
       updateResult: '',
       newFileString: '',
+      osmCoords: [0, 0],
+      map: '',
     }
   },
 
@@ -140,8 +160,26 @@ export default {
     if (localStorage.walletnum) {
       this.walletnum = localStorage.walletnum
     }
+    /* eslint-disable no-new */
+    /* eslint-disable no-unused-vars */
+    this.map = new Map({
+      layers: this.layers(),
+      target: 'map',
+      view: new View({
+        center: [this.osmCoords[0], this.osmCoords[1]],
+        zoom: 0,
+      }),
+    })
   },
   methods: {
+    layers() {
+      const layers = [
+        new TileLayer({
+          source: new OSM(),
+        }),
+      ]
+      return layers
+    },
     persist() {
       localStorage.walletnum = this.walletnum
     },
@@ -200,6 +238,10 @@ export default {
     pretty(file) {
       // const test = JSON.stringify((JSON.parse(file.slice(0,1))), null, 2);
       this.prettyJSON = JSON.stringify(JSON.parse(file), undefined, 2)
+      // every time the function will format the JSON, it will also update the map
+      this.osmCoords = fromLonLat([this.coords.lng, this.coords.lat])
+      this.map.getView().setCenter([this.osmCoords[0], this.osmCoords[1]])
+      this.map.getView().setZoom(5)
       return this.prettyJSON
     },
   },
@@ -228,5 +270,10 @@ export default {
   content: '';
   display: table;
   clear: both;
+}
+.map {
+  height: 400px;
+  width: 75%;
+  align-content: center;
 }
 </style>
