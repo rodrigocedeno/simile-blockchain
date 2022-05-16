@@ -1,6 +1,16 @@
 export default {
   // Target: https://go.nuxtjs.dev/config-target
-  target: 'static',
+  ssr:false,
+  target: 'client',
+/*   env: {
+    BASE_URL: 'http://test.heroku.com'
+  },
+  serverMiddleware:[
+    {
+      path:'/api',
+      handler:'~/server/rest/api.js'
+    },
+  ], */
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
