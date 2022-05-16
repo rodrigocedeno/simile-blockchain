@@ -36,12 +36,12 @@
                 <h1 class="card-title">Details of Selected Point:</h1>
                 <p><strong> Hash: </strong> {{ currentObsHash }}</p>
                 <br />
-                <p><strong>Latitude: </strong> {{ coords.lat }}</p>
+                <p><strong>Latitude: </strong> {{ convertIndex(currentObsIndex).lat }}</p>
                 <br />
-                <p><strong>Longitude: </strong> {{ coords.lng }}</p>
+                <p><strong>Longitude: </strong> {{ convertIndex(currentObsIndex).lng }}</p>
                 <br />
                 <p><strong>JSON file data: </strong></p>
-                <span style="white-space: pre">{{ pretty(file) }}</span>
+                <span style="white-space: pre">{{ pretty(file) }} </span>
                 <br />
                 <div>
                   <strong>
@@ -82,8 +82,7 @@
             </div>
           </div>
           <div>
-            <div class="row">
-            </div>
+            <div class="row"></div>
           </div>
         </div>
         <div v-else>
@@ -91,16 +90,15 @@
         </div>
       </div>
       <div class="d-flex justify-content-center p-2">
-      <div id="map" class="map"></div>
+        <div id="map" class="map"></div>
       </div>
-      {{coords2}}
     </body>
   </div>
 </template>
 
 <script>
 import 'ol/ol.css'
-import {fromLonLat} from 'ol/proj'
+import { fromLonLat } from 'ol/proj'
 import { View, Map } from 'ol'
 import { Tile as TileLayer } from 'ol/layer'
 import OSM from 'ol/source/OSM'
@@ -123,14 +121,14 @@ export default {
       countVotes: '',
       voteResult: '',
       prettyJSON: '',
-      osmCoords: '',
-      coords2: '',
+      osmCoords: [0, 0],
+      map: '',
     }
   },
 
   async mounted() {
     this.observationList = await blockchain.getObservations()
-    this.coords2 = this.coords.lng
+
     // eslint-disable-next-line no-console
     // console.log(jsonData)
     if (localStorage.walletnum) {
@@ -138,12 +136,13 @@ export default {
     }
 
     /* eslint-disable no-new */
-    new Map({
+    /* eslint-disable no-unused-vars */
+    this.map = new Map({
       layers: this.layers(),
       target: 'map',
       view: new View({
-        center: [0,0],
-        zoom: 4,
+        center: [this.osmCoords[0], this.osmCoords[1]],
+        zoom: 0,
       }),
     })
   },
@@ -156,10 +155,7 @@ export default {
       ]
       return layers
     },
-    myFromLonLat(lon,lat){
-      this.osmCoords = fromLonLat(lon,lat)
-      return this.osmCoords
-    },
+
     persist() {
       localStorage.walletnum = this.walletnum
     },
@@ -167,6 +163,7 @@ export default {
       this.coords = blockchain.getCoordFromIndex(
         blockchain.removeHexPrefix(s2index)
       )
+
       return this.coords
     },
     calculateVote(votes) {
@@ -183,7 +180,10 @@ export default {
     async viewObservation(s2Index, fileHash) {
       this.currentObsHash = fileHash
       this.currentObsIndex = s2Index
+      
+
       this.votes = await blockchain.getAllFileVotes(s2Index, fileHash)
+
       const multihash = blockchain.getIpfsMultihash(
         blockchain.removeHexPrefix(fileHash)
       )
@@ -205,6 +205,10 @@ export default {
     pretty(file) {
       // const test = JSON.stringify((JSON.parse(file.slice(0,1))), null, 2);
       this.prettyJSON = JSON.stringify(JSON.parse(file), undefined, 2)
+      // every time the function will format the JSON, it will also update the map
+      this.osmCoords = fromLonLat([this.coords.lng, this.coords.lat])
+      this.map.getView().setCenter([this.osmCoords[0], this.osmCoords[1]])
+      this.map.getView().setZoom(5)
       return this.prettyJSON
     },
   },
