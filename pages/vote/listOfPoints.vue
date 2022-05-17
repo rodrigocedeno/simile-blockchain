@@ -8,7 +8,7 @@
         <div v-if="observationList">
           <div class="row">
             <div class="col">
-              <div>
+              <div class="infoSize">
                 <h1>List of points to validate</h1>
                 <div
                   v-for="observation in observationList"
@@ -32,7 +32,7 @@
               </div>
             </div>
             <div v-if="currentObsHash" class="col">
-              <div class="card">
+              <div class="infoSize">
                 <h1 class="card-title">Details of Selected Point:</h1>
                 <p><strong> Hash: </strong> {{ currentObsHash }}</p>
                 <br />
@@ -115,8 +115,15 @@ import 'ol/ol.css'
 import { fromLonLat } from 'ol/proj'
 import { View, Map } from 'ol'
 import { Tile as TileLayer } from 'ol/layer'
+import { Icon, Style } from 'ol/style'
+// import { VectorSource, VectorLayer } from 'ol/source/Vector'
+import VectorSource from 'ol/source/Vector'
+import VectorLayer from 'ol/layer/Vector'
+import Feature from 'ol/Feature'
+import Point from 'ol/geom/Point'
 import OSM from 'ol/source/OSM'
 import * as blockchain from '../../static/js/blockchain.js'
+import marker from '../../assets/marker.png'
 
 export default {
   layout: 'menu',
@@ -162,12 +169,34 @@ export default {
   },
   methods: {
     layers() {
-      const layers = [
-        new TileLayer({
-          source: new OSM(),
+      const layers = new TileLayer({
+        source: new OSM(),
+      })
+
+      const iconFeature = new Feature({
+        // geometry: new Point(this.osmCoords[0], this.osmCoords[1]),
+        geometry: new Point([this.osmCoords[0], this.osmCoords[1]]),
+        name: 'Marker',
+      })
+      const iconStyle = new Style({
+        image: new Icon({
+          anchor: [0.5, 46],
+          anchorXUnits: 'fraction',
+          anchorYUnits: 'pixels',
+          src: marker,
         }),
-      ]
-      return layers
+      })
+      iconFeature.setStyle(iconStyle)
+
+      const vectorSourceIcon = new VectorSource({
+        features: [iconFeature],
+      })
+      // Create the OL vector layer object ot add to the map
+      const vectorLayerIcon = new VectorLayer({
+        source: vectorSourceIcon,
+      })
+      
+      return [layers, vectorLayerIcon]
     },
 
     persist() {
@@ -222,6 +251,7 @@ export default {
       this.osmCoords = fromLonLat([this.coords.lng, this.coords.lat])
       this.map.getView().setCenter([this.osmCoords[0], this.osmCoords[1]])
       this.map.getView().setZoom(5)
+      console.log(this.layers())
       return this.prettyJSON
     },
   },
@@ -261,5 +291,10 @@ pre {
   height: 400px;
   width: 75%;
   align-content: center;
+}
+.infoSize {
+  max-height: 800px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 </style>
