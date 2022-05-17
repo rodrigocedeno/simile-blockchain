@@ -251,7 +251,7 @@ export default {
       this.osmCoords = fromLonLat([this.coords.lng, this.coords.lat])
       this.map.getView().setCenter([this.osmCoords[0], this.osmCoords[1]])
       this.map.getView().setZoom(5)
-      console.log(this.layers())
+      // console.log(this.layers())
       return this.prettyJSON
     },
   },

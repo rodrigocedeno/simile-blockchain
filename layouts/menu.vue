@@ -71,7 +71,7 @@ export default {
       walletnum: '',
     }
   },
-  mounted() {
+  created() {
     if (localStorage.walletnum) {
       this.walletnum = localStorage.walletnum
     } else {
