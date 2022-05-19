@@ -19,13 +19,12 @@
                       v-for="obsHashes in observation.fileHashes"
                       :key="obsHashes"
                       class="btn btn-outline-dark"
-                      @click="viewObservation(observation.s2Index, obsHashes)"
+                      @click="viewObservation(observation.s2Index.index, obsHashes, observation.s2Index.lat, observation.s2Index.lng)"
                     >
                       <strong>Hash:</strong> {{ obsHashes }}
                       <strong> Latitude:</strong>
-                      {{ convertIndex(observation.s2Index).lat
-                      }}<strong> Longitude:</strong>
-                      {{ convertIndex(observation.s2Index).lng }}
+                      {{ observation.s2Index.lat }}<strong> Longitude:</strong>
+                      {{ observation.s2Index.lng }}
                     </li>
                   </ul>
                 </div>
@@ -38,12 +37,12 @@
                 <br />
                 <p>
                   <strong>Latitude: </strong>
-                  {{ convertIndex(currentObsIndex).lat }}
+                  {{currLat}}
                 </p>
                 <br />
                 <p>
                   <strong>Longitude: </strong>
-                  {{ convertIndex(currentObsIndex).lng }}
+                  {{currLng}}
                 </p>
                 <br />
                 <p v-if="countVotes">
@@ -148,12 +147,15 @@ export default {
   },
 
   async mounted() {
-    this.observationList = await blockchain.getObservations()
-
     // eslint-disable-next-line no-console
-    // console.log(jsonData)
+
     if (localStorage.walletnum) {
       this.walletnum = localStorage.walletnum
+    }
+    this.observationList = await blockchain.getObservations()
+    for (let i = 0; i < this.observationList.length; i++) {
+      const currentInd = this.convertIndex(blockchain.removeHexPrefix(this.observationList[i].s2Index))
+      this.observationList[i].s2Index = {"index": `${this.observationList[i].s2Index}`,"lat": `${String(currentInd.lat)}`, "lng": `${String(currentInd.lng)}`}
     }
 
     /* eslint-disable no-new */
@@ -167,6 +169,7 @@ export default {
       }),
     })
   },
+
   methods: {
     layers() {
       const layers = new TileLayer({
@@ -195,7 +198,7 @@ export default {
       const vectorLayerIcon = new VectorLayer({
         source: vectorSourceIcon,
       })
-      
+
       return [layers, vectorLayerIcon]
     },
 
@@ -220,9 +223,11 @@ export default {
       return (positive / votes.length) * 100
     },
 
-    async viewObservation(s2Index, fileHash) {
+    async viewObservation(s2Index, fileHash, lat, lng) {
       this.currentObsHash = fileHash
       this.currentObsIndex = s2Index
+      this.currLat = lat
+      this.currLng = lng
 
       this.votes = await blockchain.getAllFileVotes(s2Index, fileHash)
 
