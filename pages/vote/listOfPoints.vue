@@ -5,7 +5,7 @@
     </head>
     <body>
       <div class="container">
-        <div v-if="observationJSON">
+        <div v-if="observationJSON.length === lengthList">
           <div class="row">
             <div class="col">
               <div class="infoSize">
@@ -23,6 +23,8 @@
                         (myLng = observation.lng),
                         (myVote = observation.vote),
                         (myFile = observation.file),
+                        mapCoords(observation.lat, observation.lng),
+                        layers(),
                       ]
                     "
                   >
@@ -58,7 +60,7 @@
                 </p>
                 <br />
                 <p><strong>JSON file data: </strong></p>
-                <span style="white-space: pre">{{ (myFile) }} </span>
+                <span style="white-space: pre">{{ myFile }} </span>
                 <br />
                 <div>
                   <strong>
@@ -155,6 +157,8 @@ export default {
       myLng: '',
       myVote: '',
       myFile: '',
+      completeList: null,
+      lengthList: '',
     }
   },
 
@@ -175,23 +179,16 @@ export default {
       const currentInd = this.convertIndex(
         blockchain.removeHexPrefix(this.observationList[i].s2Index)
       )
-      console.log(this.observationList[i].fileHashes[0])
       if (this.observationList[i].fileHashes.length > 0) {
         for (let j = 0; j < this.observationList[i].fileHashes.length; j++) {
-          console.log(j)
-          console.log(this.observationList[i].fileHashes[j])
-          console.log(this.observationList[i].s2Index)
-
           const currVote = await blockchain.getAllFileVotes(
             this.observationList[i].s2Index,
             this.observationList[i].fileHashes[j]
           )
-          console.log(currVote)
           const currHash = this.observationList[i].fileHashes[j]
           const multiHash = blockchain.getIpfsMultihash(
             blockchain.removeHexPrefix(currHash)
           )
-          console.log(multiHash)
           let currFile = '{}'
           try {
             currFile = await blockchain.readFromIpfs(multiHash)
@@ -202,9 +199,7 @@ export default {
           if (currFile === 'error') {
             currFile = '{}'
           }
-          console.log(currFile)
           const countVotes = this.calculateVote(currVote)
-          console.log(countVotes)
           this.observationJSON.push({
             s2Index: `${this.observationList[i].s2Index}`,
             lat: `${currentInd.lat}`,
@@ -214,11 +209,9 @@ export default {
             file: `${currFile}`,
           })
         }
-        console.log('got first')
       }
-      console.log(this.observationJSON)
     }
-
+    this.lengthList = this.observationJSON.length
     /* eslint-disable no-new */
     /* eslint-disable no-unused-vars */
     this.map = new Map({
@@ -232,6 +225,13 @@ export default {
   },
 
   methods: {
+    mapCoords(lat, lng) {
+      this.osmCoords = fromLonLat([lng, lat])
+      this.osmLat = this.osmCoords[1]
+      this.osmLng = this.osmCoords[0]
+      this.map.getView().setCenter([this.osmCoords[0], this.osmCoords[1]])
+      this.map.getView().setZoom(5)
+    },
     layers() {
       const layers = new TileLayer({
         source: new OSM(),
@@ -239,7 +239,7 @@ export default {
 
       const iconFeature = new Feature({
         // geometry: new Point(this.osmCoords[0], this.osmCoords[1]),
-        geometry: new Point([this.osmCoords[0], this.osmCoords[1]]),
+        geometry: new Point([this.osmLat, this.osmLng]),
         name: 'Marker',
       })
       const iconStyle = new Style({
@@ -284,23 +284,6 @@ export default {
       return (positive / votes.length) * 100
     },
 
-    async viewObservation(s2Index, fileHash, lat, lng, vote, file) {
-      this.currentObsHash = fileHash
-      this.currentObsIndex = s2Index
-      this.currLat = lat
-      this.currLng = lng
-      this.vote = vote
-      this.file = file
-
-      this.votes = await blockchain.getAllFileVotes(s2Index, fileHash)
-
-      const multihash = blockchain.getIpfsMultihash(
-        blockchain.removeHexPrefix(fileHash)
-      )
-      this.file = await blockchain.readFromIpfs(multihash)
-      this.countVotes = this.calculateVote(this.votes)
-    },
-
     async sendVote(vote) {
       this.voteResult = await blockchain.voteObservation(
         this.currentObsHash,
@@ -313,13 +296,11 @@ export default {
     },
 
     pretty(file) {
-      // const test = JSON.stringify((JSON.parse(file.slice(0,1))), null, 2);
       this.prettyJSON = JSON.stringify(JSON.parse(file), undefined, 2)
       // every time the function will format the JSON, it will also update the map
       this.osmCoords = fromLonLat([this.coords.lng, this.coords.lat])
       this.map.getView().setCenter([this.osmCoords[0], this.osmCoords[1]])
       this.map.getView().setZoom(5)
-      // console.log(this.layers())
       return this.prettyJSON
     },
   },
