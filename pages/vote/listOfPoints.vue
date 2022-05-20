@@ -121,7 +121,7 @@ import { fromLonLat } from 'ol/proj'
 import { View, Map } from 'ol'
 import { Tile as TileLayer } from 'ol/layer'
 import { Icon, Style } from 'ol/style'
-import {Modify} from 'ol/interaction';
+// import {Modify} from 'ol/interaction';
 import VectorSource from 'ol/source/Vector'
 import VectorLayer from 'ol/layer/Vector'
 import Feature from 'ol/Feature'
@@ -261,10 +261,6 @@ export default {
       const vectorLayerIcon = new VectorLayer({
         source: vectorSourceIcon,
       })
-       const modifyPos = new Modify({
-         features: select.getFeatures() 
-       })
-
       return [layers, vectorLayerIcon]
     },
 
