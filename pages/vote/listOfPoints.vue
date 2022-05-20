@@ -121,6 +121,7 @@ import { fromLonLat } from 'ol/proj'
 import { View, Map } from 'ol'
 import { Tile as TileLayer } from 'ol/layer'
 import { Icon, Style } from 'ol/style'
+import {Modify} from 'ol/interaction';
 import VectorSource from 'ol/source/Vector'
 import VectorLayer from 'ol/layer/Vector'
 import Feature from 'ol/Feature'
@@ -147,6 +148,8 @@ export default {
       voteResult: '',
       prettyJSON: '',
       osmCoords: [0, 0],
+      lat: [0],
+      lng: [0],
       map: '',
       observationJSON: [],
       vote: '',
@@ -189,9 +192,7 @@ export default {
           )
           let currFile = '{}'
           try {
-            currFile = await blockchain.readFromIpfs(
-              blockchain.removeHexPrefix(multiHash)
-            )
+            currFile = await blockchain.readFromIpfs(multiHash)
           } catch (err) {
             currFile = 'error'
           }
@@ -230,7 +231,7 @@ export default {
       this.osmLat = this.osmCoords[1]
       this.osmLng = this.osmCoords[0]
       this.map.getView().setCenter([this.osmCoords[0], this.osmCoords[1]])
-      this.map.getView().setZoom(5)
+      this.map.getView().setZoom(6)
     },
     layers() {
       const layers = new TileLayer({
@@ -239,9 +240,10 @@ export default {
 
       const iconFeature = new Feature({
         // geometry: new Point(this.osmCoords[0], this.osmCoords[1]),
-        geometry: new Point([this.osmCoords[0], this.osmCoords[1]]),
+        geometry: new Point([this.osmCoords[1], this.osmCoords[0]]),
         name: 'Marker',
       })
+      // iconFeature.setGeometry([this.osmCoords[1], this.osmCoords[0]])
       const iconStyle = new Style({
         image: new Icon({
           anchor: [0.5, 46],
@@ -259,6 +261,9 @@ export default {
       const vectorLayerIcon = new VectorLayer({
         source: vectorSourceIcon,
       })
+       const modifyPos = new Modify({
+         features: select.getFeatures() 
+       })
 
       return [layers, vectorLayerIcon]
     },
