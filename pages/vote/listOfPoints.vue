@@ -5,56 +5,60 @@
     </head>
     <body>
       <div class="container">
-        <div v-if="observationList">
+        <div v-if="observationJSON">
           <div class="row">
             <div class="col">
               <div class="infoSize">
                 <h1>List of points to validate</h1>
-                <div
-                  v-for="observation in observationList"
-                  :key="observation.s2index"
-                >
-                  <ul class="list-group">
-                    <li
-                      v-for="obsHashes in observation.fileHashes"
-                      :key="obsHashes"
-                      class="btn btn-outline-dark"
-                      @click="viewObservation(observation.s2Index.index, obsHashes, observation.s2Index.lat, observation.s2Index.lng)"
-                    >
-                      <strong>Hash:</strong> {{ obsHashes }}
-                      <strong> Latitude:</strong>
-                      {{ observation.s2Index.lat }}<strong> Longitude:</strong>
-                      {{ observation.s2Index.lng }}
-                    </li>
-                  </ul>
-                </div>
+                <ul class="list-group">
+                  <li
+                    v-for="observation in observationJSON"
+                    :key="observation.id"
+                    class="btn btn-outline-dark"
+                    @click="
+                      ;[
+                        (showObs = true),
+                        (myHash = observation.hash),
+                        (myLat = observation.lat),
+                        (myLng = observation.lng),
+                        (myVote = observation.vote),
+                        (myFile = observation.file),
+                      ]
+                    "
+                  >
+                    <strong>Hash:</strong> {{ observation.hash }}
+                    <strong> Latitude:</strong>
+                    {{ observation.lat }}<strong> Longitude:</strong>
+                    {{ observation.lng }}
+                  </li>
+                </ul>
               </div>
             </div>
-            <div v-if="currentObsHash" class="col">
+            <div v-show="showObs" class="col">
               <div class="infoSize">
                 <h1 class="card-title">Details of Selected Point:</h1>
-                <p><strong> Hash: </strong> {{ currentObsHash }}</p>
+                <p><strong> Hash: </strong> {{ myHash }}</p>
                 <br />
                 <p>
                   <strong>Latitude: </strong>
-                  {{currLat}}
+                  {{ myLat }}
                 </p>
                 <br />
                 <p>
                   <strong>Longitude: </strong>
-                  {{currLng}}
+                  {{ myLng }}
                 </p>
                 <br />
-                <p v-if="countVotes">
+                <p v-if="vote">
                   <strong>Percentage of positive votes: </strong>
-                  {{ countVotes }}
+                  {{ myVote }}
                 </p>
                 <p v-else>
                   <strong>Observation still not voted </strong>
                 </p>
                 <br />
                 <p><strong>JSON file data: </strong></p>
-                <span style="white-space: pre">{{ pretty(file) }} </span>
+                <span style="white-space: pre">{{ (myFile) }} </span>
                 <br />
                 <div>
                   <strong>
@@ -143,6 +147,14 @@ export default {
       prettyJSON: '',
       osmCoords: [0, 0],
       map: '',
+      observationJSON: [],
+      vote: '',
+      showObs: false,
+      myHash: '',
+      myLat: '',
+      myLng: '',
+      myVote: '',
+      myFile: '',
     }
   },
 
@@ -153,9 +165,58 @@ export default {
       this.walletnum = localStorage.walletnum
     }
     this.observationList = await blockchain.getObservations()
+    // Object.defineProperty(this.observationList, 'fileHashes', {
+    //   configurable: true,
+    //   writable: true,
+    // })
+    this.observationJSON = []
+
     for (let i = 0; i < this.observationList.length; i++) {
-      const currentInd = this.convertIndex(blockchain.removeHexPrefix(this.observationList[i].s2Index))
-      this.observationList[i].s2Index = {"index": `${this.observationList[i].s2Index}`,"lat": `${String(currentInd.lat)}`, "lng": `${String(currentInd.lng)}`}
+      const currentInd = this.convertIndex(
+        blockchain.removeHexPrefix(this.observationList[i].s2Index)
+      )
+      console.log(this.observationList[i].fileHashes[0])
+      if (this.observationList[i].fileHashes.length > 0) {
+        for (let j = 0; j < this.observationList[i].fileHashes.length; j++) {
+          console.log(j)
+          console.log(this.observationList[i].fileHashes[j])
+          console.log(this.observationList[i].s2Index)
+
+          const currVote = await blockchain.getAllFileVotes(
+            this.observationList[i].s2Index,
+            this.observationList[i].fileHashes[j]
+          )
+          console.log(currVote)
+          const currHash = this.observationList[i].fileHashes[j]
+          const multiHash = blockchain.getIpfsMultihash(
+            blockchain.removeHexPrefix(currHash)
+          )
+          console.log(multiHash)
+          let currFile = '{}'
+          try {
+            currFile = await blockchain.readFromIpfs(multiHash)
+          } catch (err) {
+            currFile = 'error'
+          }
+
+          if (currFile === 'error') {
+            currFile = '{}'
+          }
+          console.log(currFile)
+          const countVotes = this.calculateVote(currVote)
+          console.log(countVotes)
+          this.observationJSON.push({
+            s2Index: `${this.observationList[i].s2Index}`,
+            lat: `${currentInd.lat}`,
+            lng: `${currentInd.lng}`,
+            hash: `${currHash}`,
+            vote: `${countVotes}`,
+            file: `${currFile}`,
+          })
+        }
+        console.log('got first')
+      }
+      console.log(this.observationJSON)
     }
 
     /* eslint-disable no-new */
@@ -223,11 +284,13 @@ export default {
       return (positive / votes.length) * 100
     },
 
-    async viewObservation(s2Index, fileHash, lat, lng) {
+    async viewObservation(s2Index, fileHash, lat, lng, vote, file) {
       this.currentObsHash = fileHash
       this.currentObsIndex = s2Index
       this.currLat = lat
       this.currLng = lng
+      this.vote = vote
+      this.file = file
 
       this.votes = await blockchain.getAllFileVotes(s2Index, fileHash)
 

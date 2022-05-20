@@ -214,6 +214,7 @@ export default {
         blockchain.removeHexPrefix(fileHash)
       )
       this.file = await blockchain.readFromIpfs(multihash)
+      // this.file = '{}'
       this.countVotes = this.calculateVote(this.votes)
     },
 
