@@ -184,7 +184,6 @@ export default {
       this.walletnum = localStorage.walletnum
     }
     this.observationList = await blockchain.getUserObservations(localStorage.walletnum)
-    console.log(this.observationList);
     this.observationJSON = []
 
     for (let i = 0; i < this.observationList.length; i++) {
