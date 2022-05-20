@@ -121,7 +121,6 @@ import { fromLonLat } from 'ol/proj'
 import { View, Map } from 'ol'
 import { Tile as TileLayer } from 'ol/layer'
 import { Icon, Style } from 'ol/style'
-// import { VectorSource, VectorLayer } from 'ol/source/Vector'
 import VectorSource from 'ol/source/Vector'
 import VectorLayer from 'ol/layer/Vector'
 import Feature from 'ol/Feature'
@@ -176,10 +175,9 @@ export default {
     this.observationJSON = []
 
     for (let i = 0; i < this.observationList.length; i++) {
-      const currentInd = this.convertIndex(
-        blockchain.removeHexPrefix(this.observationList[i].s2Index)
-      )
       if (this.observationList[i].fileHashes.length > 0) {
+        const currentInd = this.convertIndex(this.observationList[i].s2Index)
+
         for (let j = 0; j < this.observationList[i].fileHashes.length; j++) {
           const currVote = await blockchain.getAllFileVotes(
             this.observationList[i].s2Index,
@@ -191,7 +189,9 @@ export default {
           )
           let currFile = '{}'
           try {
-            currFile = await blockchain.readFromIpfs(multiHash)
+            currFile = await blockchain.readFromIpfs(
+              blockchain.removeHexPrefix(multiHash)
+            )
           } catch (err) {
             currFile = 'error'
           }
@@ -239,7 +239,7 @@ export default {
 
       const iconFeature = new Feature({
         // geometry: new Point(this.osmCoords[0], this.osmCoords[1]),
-        geometry: new Point([this.osmLat, this.osmLng]),
+        geometry: new Point([this.osmCoords[0], this.osmCoords[1]]),
         name: 'Marker',
       })
       const iconStyle = new Style({
@@ -270,7 +270,6 @@ export default {
       this.coords = blockchain.getCoordFromIndex(
         blockchain.removeHexPrefix(s2index)
       )
-
       return this.coords
     },
     calculateVote(votes) {
