@@ -198,7 +198,8 @@ export default {
           }
 
           if (currFile === 'error') {
-            currFile = '{}'
+            currFile =
+              '{IPFS error, please verify that your connection allows conneciton with the IPFS.}'
           }
           const countVotes = this.calculateVote(currVote)
           this.observationJSON.push({
