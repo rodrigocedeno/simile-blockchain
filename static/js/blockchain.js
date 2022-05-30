@@ -536,7 +536,7 @@ const cellABI = [
 	}
 ]
 
-const registryAddress = "0xB95E907ef1Ad5c365c78201Bd8A51623F44c76b7"; //address of the deployed registry contract
+const registryAddress = "0x506f16d6C1a55fF387d359a62479078F09958817"; //address of the deployed registry contract
 //create web3 contract instance of the registry 
 const registryContract = new web3.eth.Contract(registryABI, registryAddress); 
 
